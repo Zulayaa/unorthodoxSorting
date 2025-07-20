@@ -1,0 +1,140 @@
+import java.util.*;
+
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        List<Person> people = new ArrayList<>();
+        boolean running = true;
+
+        printMenu();
+
+        while (running) {
+            System.out.print("Command:\n-> ");
+            String command = scanner.nextLine().toLowerCase();
+
+            switch (command) {
+                default:
+                    System.out.println("Unknown command! (type 'help' for commands)");
+                    break;
+
+                case "1":
+                    addPerson(scanner, people);
+                    break;
+
+                case "2":
+                    printList(people);
+                    break;
+
+                case "3":
+                    sortByName(people);
+                    break;
+
+                case "4":
+                    sortByAge(people);
+                    break;
+
+                case "x":
+                    running = false;
+                    break;
+
+                case "help":
+                    printMenu();
+                    break;
+            }
+        }
+    }
+
+    public static void printMenu() {
+        System.out.println("Commands:");
+        System.out.println("1 -> Upload a person's data to the list");
+        System.out.println("2 -> Print the list of people");
+        System.out.println("3 -> Sort by name, then print the list");
+        System.out.println("4 -> Sort by age, then print the list");
+        System.out.println("X -> Quit");
+    }
+
+    public static void printList(List<Person> people) {
+        for (Person prsn : people) {
+            System.out.println(prsn);
+        }
+    }
+
+    public static void addPerson(Scanner scanner, List<Person> people) {
+        System.out.println("Name of the person:");
+        String name = scanner.nextLine();
+
+        System.out.println("Age of the person:");
+        int age = 0;
+        while (true) {
+            try {
+                age = Integer.valueOf(scanner.nextLine());
+                if (age < 0) {
+                    System.out.println("Há' hogy lehetne egy ember negatív korban?");
+                } else {
+                    break;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Hülye vagy fiam, ez nem szám. Try again:");
+            }
+        }
+        people.add(new Person(name, age));
+    }
+
+    public static void sortByName(List<Person> people) {
+        List<Person> sortedByName = new ArrayList<>();
+        Set<Integer> usedIndexes = new HashSet<>();
+
+        while (sortedByName.size() < people.size()) {
+            String lowestName = null;
+            int indexOfLowest = -1;
+
+            for (int i = 0; i < people.size(); i++) {
+                if (usedIndexes.contains(i)) {
+                    continue;
+                }
+
+                String currentName = people.get(i).getName();
+
+                if (lowestName == null || currentName.compareTo(lowestName) < 0) {
+                    lowestName = currentName;
+                    indexOfLowest = i;
+                }
+            }
+
+            if (indexOfLowest != -1) {
+                sortedByName.add(people.get(indexOfLowest));
+                usedIndexes.add(indexOfLowest);
+            }
+        }
+
+        printList(sortedByName);
+    }
+
+    public static void sortByAge(List<Person> people) {
+        List<Person> sortedByAge = new ArrayList<>();
+        Set<Integer> usedIndexes = new HashSet<>();
+
+        while (sortedByAge.size() < people.size()) {
+            int youngest = Integer.MAX_VALUE;
+            int indexOfYoungest = -1;
+
+            for (int i = 0; i < people.size(); i++) {
+                if (usedIndexes.contains(i)) {
+                    continue;
+                }
+
+                if (people.get(i).getAge() < youngest) {
+                    youngest = people.get(i).getAge();
+                    indexOfYoungest = i;
+                }
+            }
+
+            if (indexOfYoungest != -1) {
+                sortedByAge.add(people.get(indexOfYoungest));
+                usedIndexes.add(indexOfYoungest);
+            }
+        }
+        printList(sortedByAge);
+    }
+}
